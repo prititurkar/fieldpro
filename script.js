@@ -1,112 +1,119 @@
-// Initialize LocalStorage
+// Real beach cleanup photos (Unsplash)
+const defaultPhotos = [
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&w=400&h=300",
+  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?crop=entropy&cs=tinysrgb&fit=max&w=400&h=300",
+  "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?crop=entropy&cs=tinysrgb&fit=max&w=400&h=300"
+];
+
+// Load or initialize cleanup data
 let cleanupData = JSON.parse(localStorage.getItem("cleanupData")) || [];
 
-// Form submission
-document.getElementById("cleanupForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  let location = document.getElementById("location").value.trim();
-  let waste = parseFloat(document.getElementById("waste").value);
-  let photoInput = document.getElementById("photo");
+// Prepopulate sample entries if empty
+if(cleanupData.length === 0){
+    defaultPhotos.forEach((photo,index)=>{
+        cleanupData.push({
+            location: `Sample Beach ${index+1}`,
+            waste: (index+1)*5,
+            photo: photo
+        });
+    });
+    localStorage.setItem("cleanupData", JSON.stringify(cleanupData));
+}
 
-  // Prevent duplicate locations
-  if (cleanupData.some(e => e.location.toLowerCase() === location.toLowerCase())) {
-    alert("Is location ke liye pehle se entry hai!");
-    return;
-  }
+// Form submit
+document.getElementById("cleanupForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    let location = document.getElementById("location").value.trim();
+    let waste = parseFloat(document.getElementById("waste").value);
 
-  // Handle photo
-  if(photoInput.files && photoInput.files[0]) {
-    let reader = new FileReader();
-    reader.onload = function(event) {
-      let photoData = event.target.result; // base64 string
+    // Prevent duplicate locations
+    if(cleanupData.some(e=>e.location.toLowerCase()===location.toLowerCase())){
+        alert("Is location ke liye pehle se entry hai!");
+        return;
+    }
 
-      let entry = { location, waste, photo: photoData };
-      cleanupData.push(entry);
-      localStorage.setItem("cleanupData", JSON.stringify(cleanupData));
+    // Assign random photo
+    let randomPhoto = defaultPhotos[Math.floor(Math.random()*defaultPhotos.length)];
+    let entry = { location, waste, photo: randomPhoto };
+    cleanupData.push(entry);
+    localStorage.setItem("cleanupData", JSON.stringify(cleanupData));
 
-      displayEntries();
-      updateChart();
-      updateTotalWaste();
-      updateGallery();
+    displayEntries();
+    updateGallery();
+    updateChart();
+    updateTotalWaste();
 
-      document.getElementById("cleanupForm").reset();
-    };
-    reader.readAsDataURL(photoInput.files[0]);
-  }
+    document.getElementById("cleanupForm").reset();
 });
 
-// Display entries with photo and delete button
-function displayEntries() {
-  let list = document.getElementById("cleanupList");
-  list.innerHTML = "";
-  cleanupData.forEach((entry, index) => {
-    let li = document.createElement("li");
-    li.innerHTML = `
-      <div>
-        <strong>${index+1}. Location:</strong> ${entry.location}, <strong>Waste:</strong> ${entry.waste} kg
-      </div>
-      ${entry.photo ? <img src="${entry.photo}" alt="Cleanup Photo"> : ""}
-      <button onclick="deleteEntry(${index})">Delete</button>
-    `;
-    list.appendChild(li);
-  });
+// Display list entries
+function displayEntries(){
+    let list = document.getElementById("cleanupList");
+    list.innerHTML = "";
+    cleanupData.forEach((entry,index)=>{
+        let li = document.createElement("li");
+        li.innerHTML = `
+            <div><strong>${index+1}. Location:</strong> ${entry.location}, <strong>Waste:</strong> ${entry.waste} kg</div>
+            <img src="${entry.photo}" alt="Cleanup Photo">
+            <button onclick="deleteEntry(${index})">Delete</button>
+        `;
+        list.appendChild(li);
+    });
 }
 
 // Delete entry
-function deleteEntry(index) {
-  cleanupData.splice(index, 1);
-  localStorage.setItem("cleanupData", JSON.stringify(cleanupData));
-  displayEntries();
-  updateChart();
-  updateTotalWaste();
-  updateGallery();
+function deleteEntry(index){
+    cleanupData.splice(index,1);
+    localStorage.setItem("cleanupData", JSON.stringify(cleanupData));
+    displayEntries();
+    updateGallery();
+    updateChart();
+    updateTotalWaste();
+}
+
+// Update gallery
+function updateGallery(){
+    let gallery = document.getElementById("photoGallery");
+    gallery.innerHTML = "";
+    cleanupData.forEach(entry=>{
+        let img = document.createElement("img");
+        img.src = entry.photo;
+        img.alt = "Cleanup Photo";
+        gallery.appendChild(img);
+    });
 }
 
 // Total waste
-function updateTotalWaste() {
-  let total = cleanupData.reduce((sum, e) => sum + e.waste, 0);
-  document.getElementById("totalWaste").textContent = total;
-}
-
-// Gallery update
-function updateGallery() {
-  let gallery = document.getElementById("photoGallery");
-  gallery.innerHTML = "";
-  cleanupData.forEach(entry => {
-    if(entry.photo) {
-      let img = document.createElement("img");
-      img.src = entry.photo;
-      img.alt = "Cleanup Photo";
-      gallery.appendChild(img);
-    }
-  });
+function updateTotalWaste(){
+    let total = cleanupData.reduce((sum,e)=>sum+e.waste,0);
+    document.getElementById("totalWaste").textContent = total;
 }
 
 // Chart.js
-let ctx = document.getElementById('cleanupChart').getContext('2d');
-let cleanupChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: cleanupData.map(e => e.location),
-        datasets: [{
-            label: 'Waste Collected (kg)',
-            data: cleanupData.map(e => e.waste),
-            backgroundColor: 'rgba(0, 128, 128, 0.6)',
-            borderColor: 'rgba(0, 128, 128, 1)',
-            borderWidth: 1
+let ctx = document.getElementById("cleanupChart").getContext("2d");
+let cleanupChart = new Chart(ctx,{
+    type:"bar",
+    data:{
+        labels: cleanupData.map(e=>e.location),
+        datasets:[{
+            label:"Waste Collected (kg)",
+            data: cleanupData.map(e=>e.waste),
+            backgroundColor: "rgba(0,128,128,0.6)",
+            borderColor: "rgba(0,128,128,1)",
+            borderWidth:1
         }]
     },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
 });
 
-function updateChart() {
-    cleanupChart.data.labels = cleanupData.map(e => e.location);
-    cleanupChart.data.datasets[0].data = cleanupData.map(e => e.waste);
+function updateChart(){
+    cleanupChart.data.labels = cleanupData.map(e=>e.location);
+    cleanupChart.data.datasets[0].data = cleanupData.map(e=>e.waste);
     cleanupChart.update();
 }
 
 // Initial load
 displayEntries();
+updateGallery();
 updateChart();
 updateTotalWaste();
-updateGallery();
