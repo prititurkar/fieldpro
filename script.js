@@ -1,8 +1,8 @@
 // Real beach cleanup photos (Unsplash)
 const defaultPhotos = [
-  "img1.jpg",
-  "img2.jpg",
-  "img3.jpg"
+  "https://plus.unsplash.com/premium_photo-1663039947303-0fad26f737b8?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmVhY2glMjBjbGVhbnVwfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=500",
+  "https://images.unsplash.com/photo-1565803974275-dccd2f933cbb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmVhY2glMjBjbGVhbnVwfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=500",
+  "https://media.istockphoto.com/id/113563420/photo/ocean-clean-up.jpg?s=612x612&w=0&k=20&c=HN9W_U7zqwbCGxQfewa99iz6GoSIrCrnzEipLBbePxQ="
 ];
 
 // Load or initialize cleanup data
