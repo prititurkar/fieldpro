@@ -1,8 +1,8 @@
 // Real beach cleanup photos (Unsplash)
 const defaultPhotos = [
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&w=400&h=300",
-  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?crop=entropy&cs=tinysrgb&fit=max&w=400&h=300",
-  "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?crop=entropy&cs=tinysrgb&fit=max&w=400&h=300"
+  "img1.jpg",
+  "img2.jpg",
+  "img3.jpg"
 ];
 
 // Load or initialize cleanup data
